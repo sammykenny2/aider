@@ -41,6 +41,38 @@ class LazyLiteLLM:
         self._lazy_module.drop_params = True
         self._lazy_module._logging._disable_debugging()
 
+        # Custom models integration (loosely coupled)
+        # Wrap litellm.completion to route custom models
+        self._setup_custom_models_routing()
+
+    def _setup_custom_models_routing(self):
+        """Setup routing for custom model providers."""
+        try:
+            from aider.custom_models import route_custom_model
+
+            # Save original completion function
+            original_completion = self._lazy_module.completion
+
+            def custom_completion_wrapper(**kwargs):
+                """Wrapper that routes to custom providers or falls back to litellm."""
+                model_name = kwargs.get("model")
+                if model_name:
+                    # Try routing to custom provider
+                    custom_response = route_custom_model(model_name, **kwargs)
+                    if custom_response is not None:
+                        return custom_response
+
+                # Fall back to original litellm
+                return original_completion(**kwargs)
+
+            # Replace completion function
+            self._lazy_module.completion = custom_completion_wrapper
+
+        except ImportError:
+            pass  # custom_models not available, use standard litellm
+        except Exception as e:
+            print(f"Warning: Failed to setup custom models routing: {e}")
+
 
 litellm = LazyLiteLLM()
 

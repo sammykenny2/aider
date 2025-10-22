@@ -40,6 +40,17 @@ from aider.watch import FileWatcher
 from .dump import dump  # noqa: F401
 
 
+# Custom models integration (loosely coupled)
+try:
+    from aider.custom_models import load_custom_models
+    _custom_models_loaded = load_custom_models()
+except ImportError:
+    _custom_models_loaded = False
+except Exception as e:
+    print(f"Warning: Failed to load custom models: {e}")
+    _custom_models_loaded = False
+
+
 def check_config_files_for_yes(config_files):
     found = False
     for config_file in config_files:
