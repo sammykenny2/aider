@@ -42,8 +42,9 @@ from .dump import dump  # noqa: F401
 
 # Custom models integration (loosely coupled)
 try:
-    from aider.custom_models import load_custom_models
-    _custom_models_loaded = load_custom_models()
+    # Import from root-level custom_models (not aider.custom_models stub)
+    import custom_models
+    _custom_models_loaded = custom_models.load_custom_models()
 except ImportError:
     _custom_models_loaded = False
 except Exception as e:

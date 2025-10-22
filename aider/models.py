@@ -106,8 +106,9 @@ MODEL_ALIASES = {
 
 # Custom models integration (loosely coupled)
 try:
-    from aider.custom_models import get_custom_aliases
-    _custom_aliases = get_custom_aliases()
+    # Import from root-level custom_models (not aider.custom_models stub)
+    import custom_models
+    _custom_aliases = custom_models.get_custom_aliases()
     if _custom_aliases:
         MODEL_ALIASES.update(_custom_aliases)
         print(f"[Custom Models] Added {len(_custom_aliases)} model alias(es)")

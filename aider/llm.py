@@ -48,7 +48,8 @@ class LazyLiteLLM:
     def _setup_custom_models_routing(self):
         """Setup routing for custom model providers."""
         try:
-            from aider.custom_models import route_custom_model
+            # Import from root-level custom_models (not aider.custom_models stub)
+            import custom_models
 
             # Save original completion function
             original_completion = self._lazy_module.completion
@@ -58,7 +59,7 @@ class LazyLiteLLM:
                 model_name = kwargs.get("model")
                 if model_name:
                     # Try routing to custom provider
-                    custom_response = route_custom_model(model_name, **kwargs)
+                    custom_response = custom_models.route_custom_model(model_name, **kwargs)
                     if custom_response is not None:
                         return custom_response
 
